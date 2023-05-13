@@ -6,6 +6,7 @@ from typing import Final, Dict
 from praw import Reddit
 
 from src.logging_setup import LoggingSetup
+from src.reddit_facade import RedditFacade
 from src.sweeper import Sweeper
 
 
@@ -25,8 +26,9 @@ def main():
         password=config["password"],
         user_agent=config["user_agent"],
     )
+    reddit_facade: Final[RedditFacade] = RedditFacade(reddit=reddit)
     sweeper: Final[Sweeper] = Sweeper(
-        reddit=reddit,
+        reddit_facade=reddit_facade,
         sweeping_subreddit=SWEEPING_SUBREDDIT,
         sweep_limit=SWEEP_LIMIT,
         crosspost_subreddit=config["crosspost_subreddit"],
