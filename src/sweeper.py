@@ -61,7 +61,7 @@ class Sweeper:
             submission_title: Final[str] = submission.title
         title: str = (
             f"[#{submission.rank}|+{submission.score}|{submission.num_comments}] "
-            + f"{submission_title} [/r/{submission.subreddit}]"
+            + f"{submission_title} [r/{submission.subreddit}]"
         )
         if len(title) > 300:
             title = title[:297] + "..."
