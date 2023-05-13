@@ -58,7 +58,7 @@ class Sweeper:
         )
         if total_length > 300:
             submission_title: Final[str] = (
-                submission.title[: len(submission.title) - total_length + 303] + "..."
+                submission.title[: len(submission.title) - total_length + 297] + "..."
             )
         else:
             submission_title: Final[str] = submission.title
@@ -66,8 +66,6 @@ class Sweeper:
             f"[#{submission.rank}|+{submission.score}|{submission.num_comments}] "
             + f"{submission_title} [r/{submission.subreddit}]"
         )
-        if len(title) > 300:
-            title = title[:297] + "..."
         return title
 
     @staticmethod
