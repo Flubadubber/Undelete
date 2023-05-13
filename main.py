@@ -1,6 +1,6 @@
 import logging
 import sys
-import tomllib
+import tomli
 from typing import Final, Dict
 
 from praw import Reddit
@@ -17,7 +17,7 @@ def main():
     LoggingSetup.setup(level=logging.INFO)
     config_path: Final[str] = sys.argv[1]
     with open(file=config_path, mode="rb") as f:
-        config: Final[Dict[str, str]] = tomllib.load(f)
+        config: Final[Dict[str, str]] = tomli.load(f)
     reddit: Final[Reddit] = Reddit(
         client_id=config["client_id"],
         client_secret=config["client_secret"],
