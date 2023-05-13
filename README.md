@@ -1,10 +1,11 @@
 # Description
-This is a light-weight command line script which periodically checks /r/all for submissions which have been removed by
+This is a light-weight command line script which periodically checks r/all for submissions which have been removed by
 moderators or admins and permalinks any removed submissions it finds on another subreddit.
 
 # Requirements
-This was written using Python version `3.11` and only depends on one external package,
-[PRAW](https://praw.readthedocs.io/en/stable/)
+This was written using Python version `3.10` and depends on:
+* praw
+* tomli
 
 # How To Run
 Follow the prerequisites section in the
