@@ -1,21 +1,22 @@
+import asyncio
 import logging
 import sys
-import tomli
 from typing import Final, Dict
 
-from praw import Reddit
+import tomli
+from asyncpraw import Reddit
 
 from src.logging_setup import LoggingSetup
 from src.reddit_facade import RedditFacade
-from src.sweeper import Sweeper
+from src.sweeper import RemovedPostSweeper
 
-
-SWEEPING_SUBREDDIT: Final[str] = "all"
+SWEEP_SUBREDDIT: Final[str] = "all"
 SWEEP_LIMIT: Final[int] = 100
+SWEEP_INTERVAL: Final[int] = 60
 
 
-def main():
-    LoggingSetup.setup(level=logging.INFO)
+async def main():
+    LoggingSetup.setup(level=logging.DEBUG)
     config_path: Final[str] = sys.argv[1]
     with open(file=config_path, mode="rb") as f:
         config: Final[Dict[str, str]] = tomli.load(f)
@@ -27,14 +28,17 @@ def main():
         user_agent=config["user_agent"],
     )
     reddit_facade: Final[RedditFacade] = RedditFacade(reddit=reddit)
-    sweeper: Final[Sweeper] = Sweeper(
+    sweeper: Final[RemovedPostSweeper] = RemovedPostSweeper(
         reddit_facade=reddit_facade,
-        sweeping_subreddit=SWEEPING_SUBREDDIT,
-        sweep_limit=SWEEP_LIMIT,
-        crosspost_subreddit=config["crosspost_subreddit"],
     )
-    sweeper.run(recurring=True)
+    await sweeper.start(
+        sweep_subreddit=SWEEP_SUBREDDIT,
+        limit=SWEEP_LIMIT,
+        crosspost_subreddit=config["crosspost_subreddit"],
+        interval=60,
+    )
+    await reddit.close()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

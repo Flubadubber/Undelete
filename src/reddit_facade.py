@@ -1,7 +1,7 @@
 from typing import Final, List
 
-from praw import Reddit
-from praw.models import Submission
+from asyncpraw import Reddit
+from asyncpraw.models import Submission
 
 from src.structured_log import StructuredLog
 
@@ -10,13 +10,13 @@ class RedditFacade:
     def __init__(self, reddit: Reddit) -> None:
         self._reddit: Final[Reddit] = reddit
 
-    def get_top_submission_ids(self, subreddit: str, limit: int) -> List[str]:
+    async def get_top_submission_ids(self, subreddit: str, limit: int) -> List[str]:
         try:
             return [
                 submission.id
-                for submission in self._reddit.subreddit(display_name=subreddit).hot(
-                    limit=limit
-                )
+                async for submission in (
+                    await self._reddit.subreddit(display_name=subreddit)
+                ).hot(limit=limit)
             ]
         except Exception as e:
             StructuredLog.error(
@@ -27,9 +27,9 @@ class RedditFacade:
             )
             raise e
 
-    def get_submission_by_id(self, submission_id: str) -> Submission:
+    async def get_submission_by_id(self, submission_id: str) -> Submission:
         try:
-            return self._reddit.submission(id=submission_id)
+            return await self._reddit.submission(id=submission_id)
         except Exception as e:
             StructuredLog.error(
                 message="Exception while getting submission by ID",
@@ -38,9 +38,11 @@ class RedditFacade:
             )
             raise e
 
-    def write_post(self, subreddit: str, title: str, url: str) -> None:
+    async def write_post(self, subreddit: str, title: str, url: str) -> None:
         try:
-            self._reddit.subreddit(display_name=subreddit).submit(title=title, url=url)
+            await self._reddit.subreddit(display_name=subreddit).submit(
+                title=title, url=url
+            )
         except Exception as e:
             StructuredLog.error(
                 message="Exception while writing submission",
