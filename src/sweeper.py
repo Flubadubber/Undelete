@@ -72,7 +72,9 @@ class RemovedPostSweeper:
             )
         ).get_removed()
         for submission in removed_submissions.get_submissions():
-            rank: int = hot_submissions.get_position(submission=submission) + 1
+            rank: int = (
+                hot_submissions.get_position(submission=submission) + minimum_rank + 1
+            )
             StructuredLog.info(
                 message="Found removed post",
                 identifier=submission.id,
