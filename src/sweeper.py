@@ -38,7 +38,7 @@ class RemovedPostSweeper:
             raise e
         while True:
             asyncio.create_task(
-                asyncio.wait_for(
+                coro=asyncio.wait_for(
                     fut=self.sweep(
                         sweep_subreddit=sweep_subreddit,
                         limit=limit,
