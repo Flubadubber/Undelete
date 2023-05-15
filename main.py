@@ -8,6 +8,7 @@ from asyncpraw import Reddit
 
 from src.logging_setup import LoggingSetup
 from src.reddit_facade import RedditFacade
+from src.structured_log import StructuredLog
 from src.sweeper import RemovedPostSweeper
 
 SWEEP_SUBREDDIT: Final[str] = "all"
@@ -31,13 +32,17 @@ async def main():
     sweeper: Final[RemovedPostSweeper] = RemovedPostSweeper(
         reddit_facade=reddit_facade,
     )
-    await sweeper.start(
-        sweep_subreddit=SWEEP_SUBREDDIT,
-        limit=SWEEP_LIMIT,
-        crosspost_subreddit=config["crosspost_subreddit"],
-        interval=60,
-    )
-    await reddit.close()
+    try:
+        await sweeper.start(
+            sweep_subreddit=SWEEP_SUBREDDIT,
+            limit=SWEEP_LIMIT,
+            crosspost_subreddit=config["crosspost_subreddit"],
+            interval=60,
+        )
+    except asyncio.exceptions.CancelledError:
+        StructuredLog.critical(message="Main thread interrupted, performing cleanup")
+    finally:
+        await reddit.close()
 
 
 if __name__ == "__main__":
