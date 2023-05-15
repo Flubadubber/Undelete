@@ -3,8 +3,8 @@ This is a light-weight command line script which periodically checks r/all for s
 moderators or admins and permalinks any removed submissions it finds on another subreddit.
 
 # Requirements
-This was written using Python version `3.10` and depends on:
-* praw
+This was written for Python version `3.10` and depends on:
+* asyncpraw
 * tomli
 
 # How To Run
