@@ -22,20 +22,22 @@ class RemovedPostSweeper:
             crosspost_subreddit=crosspost_subreddit,
             interval=interval,
         )
+        hot_submissions: Final[SubmissionList] = SubmissionList(submissions=[])
         try:
-            hot_submissions: Final[
-                SubmissionList
-            ] = await self._reddit_facade.get_hot_submissions(
-                subreddit=sweep_subreddit, limit=limit
+            hot_submissions.set(
+                submissions=(
+                    await self._reddit_facade.get_hot_submissions(
+                        subreddit=sweep_subreddit, limit=limit
+                    )
+                ).get_submissions()
             )
         except Exception as e:
-            StructuredLog.critical(
+            StructuredLog.error(
                 message="Exception while retrieving initial hot submissions",
                 sweep_subreddit=sweep_subreddit,
                 limit=limit,
                 exception=str(e),
             )
-            raise e
         while True:
             asyncio.create_task(
                 coro=asyncio.wait_for(
