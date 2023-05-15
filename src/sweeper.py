@@ -27,7 +27,7 @@ class RemovedPostSweeper:
             hot_submissions.set(
                 submissions=(
                     await self._reddit_facade.get_hot_submissions(
-                        subreddit=sweep_subreddit, limit=limit
+                        subreddit=sweep_subreddit, minimum_rank=0, maximum_rank=limit
                     )
                 ).get_submissions()
             )
@@ -68,7 +68,7 @@ class RemovedPostSweeper:
         new_hot_submissions: Final[
             SubmissionList
         ] = await self._reddit_facade.get_hot_submissions(
-            subreddit=sweep_subreddit, limit=limit
+            subreddit=sweep_subreddit, minimum_rank=0, maximum_rank=limit
         )
         removed_submissions: Final[SubmissionList] = (
             await self._reddit_facade.reload_submissions(

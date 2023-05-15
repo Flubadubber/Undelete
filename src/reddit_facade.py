@@ -20,21 +20,24 @@ class RedditFacade:
             )
             raise e
 
-    async def get_hot_submissions(self, subreddit: str, limit: int) -> SubmissionList:
+    async def get_hot_submissions(
+        self, subreddit: str, minimum_rank: int, maximum_rank: int
+    ) -> SubmissionList:
         try:
             return SubmissionList(
                 submissions=[
                     submission
                     async for submission in (
                         await self.get_subreddit(subreddit=subreddit)
-                    ).hot(limit=limit)
+                    ).hot(limit=maximum_rank)
                 ]
-            )
+            )[minimum_rank:]
         except Exception as e:
             StructuredLog.error(
                 message="Exception while getting top submissions",
                 subreddit=subreddit,
-                limit=limit,
+                minimum_rank=minimum_rank,
+                maximum_rank=maximum_rank,
                 exception=str(e),
             )
             raise e
