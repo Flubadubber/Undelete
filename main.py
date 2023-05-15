@@ -4,6 +4,7 @@ import sys
 from typing import Final, Dict
 
 import tomli
+from aiohttp import ClientSession
 from asyncpraw import Reddit
 
 from src.logging_setup import LoggingSetup
@@ -21,12 +22,14 @@ async def main():
     config_path: Final[str] = sys.argv[1]
     with open(file=config_path, mode="rb") as f:
         config: Final[Dict[str, str]] = tomli.load(f)
+    session = ClientSession(trust_env=True)
     reddit: Final[Reddit] = Reddit(
         client_id=config["client_id"],
         client_secret=config["client_secret"],
         username=config["username"],
         password=config["password"],
         user_agent=config["user_agent"],
+        requestor_kwargs={"session": session},
     )
     reddit_facade: Final[RedditFacade] = RedditFacade(reddit=reddit)
     sweeper: Final[RemovedPostSweeper] = RemovedPostSweeper(
