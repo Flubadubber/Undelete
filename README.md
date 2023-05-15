@@ -2,11 +2,6 @@
 This is a light-weight command line script which periodically checks r/all for submissions which have been removed by
 moderators or admins and permalinks any removed submissions it finds on another subreddit.
 
-# Requirements
-This was written for Python version `3.10` and depends on:
-* asyncpraw
-* tomli
-
 # How To Run
 Follow the prerequisites section in the
 [PRAW quick start guide](https://praw.readthedocs.io/en/latest/getting_started/quick_start.html) to create a Reddit
