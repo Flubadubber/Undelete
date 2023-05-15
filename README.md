@@ -9,7 +9,7 @@ This was written for Python version `3.10` and depends on:
 
 # How To Run
 Follow the prerequisites section in the
-[PRAW quick start guide](https://praw.readthedocs.io/en/latest/getting_started/quick_start.html) to create a reddit
+[PRAW quick start guide](https://praw.readthedocs.io/en/latest/getting_started/quick_start.html) to create a Reddit
 account and Reddit API application. Once done, create a TOML file in this format:
 ```toml
 [client]
@@ -45,4 +45,14 @@ Run the script using this command:
 ```
 python main.py <path-to-toml-file>
 ```
-Where `<path-to-toml-file>` is replaced with the full filepath pointing to you TOML file
+Where `<path-to-toml-file>` is replaced with the full filepath pointing to your TOML file.
+
+# Considerations
+I have deliberately cut a few corners in the interest of throughput, given that this is more a hobby project than a
+serious piece of production software. Specifically:
+* No unit tests
+* No docstrings
+* No monitoring outside of semantic logging
+* No CI/CD
+
+Some of these may be addressed in the future, but they're not as important as functionality and code quality.
