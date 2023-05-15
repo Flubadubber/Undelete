@@ -83,10 +83,12 @@ class RemovedPostSweeper:
                 subreddit=str(submission.subreddit),
                 permalink=self._construct_permalink(submission),
             )
-            await self._reddit_facade.write_post(
-                subreddit=crosspost_subreddit,
-                title=self._construct_title(submission=submission, rank=rank),
-                url=self._construct_permalink(submission),
+            asyncio.create_task(
+                coro=self._reddit_facade.write_post(
+                    subreddit=crosspost_subreddit,
+                    title=self._construct_title(submission=submission, rank=rank),
+                    url=self._construct_permalink(submission),
+                )
             )
         hot_submissions.set(submissions=new_hot_submissions.get_submissions())
         StructuredLog.info(
