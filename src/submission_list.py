@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Set, List
+from typing import Set, List, Union
 
 from asyncpraw.models import Submission
 
@@ -11,6 +11,11 @@ class SubmissionList:
 
     def __len__(self) -> int:
         return len(self._submissions)
+
+    def __getitem__(self, key: Union[int, slice]) -> Union[Submission, SubmissionList]:
+        if isinstance(key, int):
+            return self._submissions[key]
+        return SubmissionList(submissions=self._submissions.__getitem__(key))
 
     def get_ids(self) -> Set[str]:
         return set(submission.id for submission in self._submissions)
