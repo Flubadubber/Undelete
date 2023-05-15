@@ -52,6 +52,31 @@ class RemovedPostSweeper:
         crosspost_subreddit: str,
         hot_submissions: SubmissionList,
     ) -> None:
+        try:
+            await self._sweep(
+                sweep_subreddit=sweep_subreddit,
+                minimum_rank=minimum_rank,
+                maximum_rank=maximum_rank,
+                crosspost_subreddit=crosspost_subreddit,
+                hot_submissions=hot_submissions,
+            )
+        except asyncio.exceptions.CancelledError:
+            StructuredLog.error(
+                message="Sweep thread cancelled",
+                sweep_subreddit=sweep_subreddit,
+                minimum_rank=minimum_rank,
+                maximum_rank=maximum_rank,
+                crosspost_subreddit=crosspost_subreddit,
+            )
+
+    async def _sweep(
+        self,
+        sweep_subreddit: str,
+        minimum_rank: int,
+        maximum_rank: int,
+        crosspost_subreddit: str,
+        hot_submissions: SubmissionList,
+    ) -> None:
         StructuredLog.info(
             message="Sweeping for removed posts",
             sweep_subreddit=sweep_subreddit,
