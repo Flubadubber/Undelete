@@ -12,7 +12,7 @@ class StructuredLog:
     def __init__(self, level: str, message: str, additional_props: Dict) -> None:
         self._timestamp: Final[
             str
-        ] = f"{datetime.datetime.utcnow().replace(microsecond=0).isoformat()}Z"
+        ] = f"{datetime.datetime.utcnow().isoformat()[:-3]}Z"
         self._level: Final[str] = level
         self._message: Final[str] = message
         self._additional_props: Final[Dict] = additional_props

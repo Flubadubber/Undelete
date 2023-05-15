@@ -1,46 +1,47 @@
-from typing import Final, List
+from typing import Final
 
 from asyncpraw import Reddit
-from asyncpraw.models import Submission
+from asyncpraw.models import Subreddit
 
 from src.structured_log import StructuredLog
+from src.submission_list import SubmissionList
 
 
 class RedditFacade:
     def __init__(self, reddit: Reddit) -> None:
         self._reddit: Final[Reddit] = reddit
 
-    async def get_top_submission_ids(self, subreddit: str, limit: int) -> List[str]:
+    async def get_subreddit(self, subreddit: str) -> Subreddit:
         try:
-            return [
-                submission.id
-                async for submission in (
-                    await self._reddit.subreddit(display_name=subreddit)
-                ).hot(limit=limit)
-            ]
+            return await self._reddit.subreddit(display_name=subreddit)
         except Exception as e:
             StructuredLog.error(
-                message="Exception while getting top submission ids",
+                message="Exception while getting subreddit", subreddit=subreddit
+            )
+            raise e
+
+    async def get_hot_submissions(self, subreddit: str, limit: int) -> SubmissionList:
+        try:
+            return SubmissionList(
+                submissions=[
+                    submission
+                    async for submission in (
+                        await self.get_subreddit(subreddit=subreddit)
+                    ).hot(limit=limit)
+                ]
+            )
+        except Exception as e:
+            StructuredLog.error(
+                message="Exception while getting top submissions",
                 subreddit=subreddit,
                 limit=limit,
                 exception=str(e),
             )
             raise e
 
-    async def get_submission_by_id(self, submission_id: str) -> Submission:
-        try:
-            return await self._reddit.submission(id=submission_id)
-        except Exception as e:
-            StructuredLog.error(
-                message="Exception while getting submission by ID",
-                submission_id=submission_id,
-                exception=str(e),
-            )
-            raise e
-
     async def write_post(self, subreddit: str, title: str, url: str) -> None:
         try:
-            await self._reddit.subreddit(display_name=subreddit).submit(
+            await (await self.get_subreddit(subreddit=subreddit)).submit(
                 title=title, url=url
             )
         except Exception as e:

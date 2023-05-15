@@ -16,7 +16,7 @@ SWEEP_INTERVAL: Final[int] = 60
 
 
 async def main():
-    LoggingSetup.setup(level=logging.DEBUG)
+    LoggingSetup.setup(level=logging.INFO)
     config_path: Final[str] = sys.argv[1]
     with open(file=config_path, mode="rb") as f:
         config: Final[Dict[str, str]] = tomli.load(f)
