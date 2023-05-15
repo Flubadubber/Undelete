@@ -38,7 +38,8 @@ async def main():
     try:
         await sweeper.start(
             sweep_subreddit=SWEEP_SUBREDDIT,
-            limit=SWEEP_LIMIT,
+            minimum_rank=0,
+            maximum_rank=SWEEP_LIMIT,
             crosspost_subreddit=config["crosspost_subreddit"],
             interval=SWEEP_INTERVAL,
         )

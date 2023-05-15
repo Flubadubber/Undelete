@@ -13,37 +13,29 @@ class RemovedPostSweeper:
         self._reddit_facade: Final[RedditFacade] = reddit_facade
 
     async def start(
-        self, sweep_subreddit: str, limit: int, crosspost_subreddit: str, interval: int
+        self,
+        sweep_subreddit: str,
+        minimum_rank: int,
+        maximum_rank: int,
+        crosspost_subreddit: str,
+        interval: int,
     ) -> None:
         StructuredLog.info(
             message="Starting removed post sweeper",
             sweep_subreddit=sweep_subreddit,
-            limit=limit,
+            minimum_rank=minimum_rank,
+            maximum_rank=maximum_rank,
             crosspost_subreddit=crosspost_subreddit,
             interval=interval,
         )
         hot_submissions: Final[SubmissionList] = SubmissionList(submissions=[])
-        try:
-            hot_submissions.set(
-                submissions=(
-                    await self._reddit_facade.get_hot_submissions(
-                        subreddit=sweep_subreddit, minimum_rank=0, maximum_rank=limit
-                    )
-                ).get_submissions()
-            )
-        except Exception as e:
-            StructuredLog.error(
-                message="Exception while retrieving initial hot submissions",
-                sweep_subreddit=sweep_subreddit,
-                limit=limit,
-                exception=str(e),
-            )
         while True:
             asyncio.create_task(
                 coro=asyncio.wait_for(
                     fut=self.sweep(
                         sweep_subreddit=sweep_subreddit,
-                        limit=limit,
+                        minimum_rank=minimum_rank,
+                        maximum_rank=maximum_rank,
                         crosspost_subreddit=crosspost_subreddit,
                         hot_submissions=hot_submissions,
                     ),
@@ -55,20 +47,24 @@ class RemovedPostSweeper:
     async def sweep(
         self,
         sweep_subreddit: str,
-        limit: int,
+        minimum_rank: int,
+        maximum_rank: int,
         crosspost_subreddit: str,
         hot_submissions: SubmissionList,
     ) -> None:
         StructuredLog.info(
             message="Sweeping for removed posts",
             sweep_subreddit=sweep_subreddit,
-            limit=limit,
+            minimum_rank=minimum_rank,
+            maximum_rank=maximum_rank,
             crosspost_subreddit=crosspost_subreddit,
         )
         new_hot_submissions: Final[
             SubmissionList
         ] = await self._reddit_facade.get_hot_submissions(
-            subreddit=sweep_subreddit, minimum_rank=0, maximum_rank=limit
+            subreddit=sweep_subreddit,
+            minimum_rank=minimum_rank,
+            maximum_rank=maximum_rank,
         )
         removed_submissions: Final[SubmissionList] = (
             await self._reddit_facade.reload_submissions(
@@ -99,7 +95,8 @@ class RemovedPostSweeper:
             message="Completed sweep for removed posts",
             removed_count=len(removed_submissions),
             sweep_subreddit=sweep_subreddit,
-            limit=limit,
+            minimum_rank=minimum_rank,
+            maximum_rank=maximum_rank,
             crosspost_subreddit=crosspost_subreddit,
         )
 
