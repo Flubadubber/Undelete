@@ -18,7 +18,7 @@ class SubmissionList:
     def get_submissions(self) -> List[Submission]:
         return self._submissions
 
-    def get_rank(self, submission: Submission) -> int:
+    def get_position(self, submission: Submission) -> int:
         return [submission.id for submission in self._submissions].index(submission.id)
 
     def set(self, submissions: List[Submission]) -> None:
