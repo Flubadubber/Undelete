@@ -37,7 +37,7 @@ async def main():
             sweep_subreddit=SWEEP_SUBREDDIT,
             limit=SWEEP_LIMIT,
             crosspost_subreddit=config["crosspost_subreddit"],
-            interval=60,
+            interval=SWEEP_INTERVAL,
         )
     except asyncio.exceptions.CancelledError:
         StructuredLog.critical(message="Main thread interrupted, performing cleanup")

@@ -68,8 +68,10 @@ class RemovedPostSweeper:
         ] = await self._reddit_facade.get_hot_submissions(
             subreddit=sweep_subreddit, limit=limit
         )
-        removed_submissions: Final[SubmissionList] = hot_submissions.diff(
-            submission_list=new_hot_submissions
+        removed_submissions: Final[SubmissionList] = (
+            await self._reddit_facade.reload_submissions(
+                submissions=hot_submissions.diff(submission_list=new_hot_submissions)
+            )
         ).get_removed()
         for submission in removed_submissions.get_submissions():
             rank: int = removed_submissions.get_rank(submission=submission)

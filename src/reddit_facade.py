@@ -1,7 +1,7 @@
 from typing import Final
 
 from asyncpraw import Reddit
-from asyncpraw.models import Subreddit
+from asyncpraw.models import Subreddit, Submission
 
 from src.structured_log import StructuredLog
 from src.submission_list import SubmissionList
@@ -52,3 +52,23 @@ class RedditFacade:
                 url=url,
                 exception=str(e),
             )
+
+    async def reload_submission(self, submission: Submission) -> Submission:
+        try:
+            return await self._reddit.submission(id=submission.id)
+        except Exception as e:
+            StructuredLog.error(
+                message="Exception while reloading submission",
+                submission_id=submission.id,
+                subreddit=str(submission.subreddit),
+                exception=str(e),
+            )
+            raise e
+
+    async def reload_submissions(self, submissions: SubmissionList) -> SubmissionList:
+        return SubmissionList(
+            submissions=[
+                await self.reload_submission(submission=submission)
+                for submission in submissions.get_submissions()
+            ]
+        )
