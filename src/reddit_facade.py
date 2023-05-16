@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, AsyncGenerator
 
 from asyncpraw import Reddit
 from asyncpraw.models import Subreddit, Submission
@@ -75,3 +75,18 @@ class RedditFacade:
                 for submission in submissions.get_submissions()
             ]
         )
+
+    async def get_redditor_submission_stream(
+        self, username: str
+    ) -> AsyncGenerator[Submission, None]:
+        try:
+            return (await self._reddit.redditor(name=username)).stream.submissions(
+                pause_after=-1, skip_existing=True
+            )
+        except Exception as e:
+            StructuredLog.error(
+                message="Exception while getting redditor",
+                username=username,
+                exception=str(e),
+            )
+            raise e
