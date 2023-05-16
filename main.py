@@ -11,7 +11,7 @@ from src.config_dict import ConfigDict
 from src.logging_setup import LoggingSetup
 from src.reddit_facade import RedditFacade
 from src.structured_log import StructuredLog
-from src.sweeper import RemovedPostSweeper
+from src.removed_post_sweeper import RemovedPostSweeper
 
 SWEEP_SUBREDDIT: Final[str] = "all"
 
@@ -31,13 +31,13 @@ async def main():
         requestor_kwargs={"session": session},
     )
     reddit_facade: Final[RedditFacade] = RedditFacade(reddit=reddit)
-    sweeper: Final[RemovedPostSweeper] = RemovedPostSweeper(
+    removed_post_sweeper: Final[RemovedPostSweeper] = RemovedPostSweeper(
         reddit_facade=reddit_facade,
     )
     try:
         await asyncio.gather(
             *[
-                sweeper.start(
+                removed_post_sweeper.start(
                     sweep_subreddit=SWEEP_SUBREDDIT,
                     minimum_rank=crosspost_subreddit_config["minimum_rank"],
                     maximum_rank=crosspost_subreddit_config["maximum_rank"],
