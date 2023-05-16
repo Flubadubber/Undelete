@@ -56,14 +56,13 @@ class RedditFacade:
                 exception=str(e),
             )
 
-    async def reload_submission(self, submission: Submission) -> Submission:
+    async def get_submission_by_id(self, submission_id: str) -> Submission:
         try:
-            return await self._reddit.submission(id=submission.id)
+            return await self._reddit.submission(id=submission_id)
         except Exception as e:
             StructuredLog.error(
-                message="Exception while reloading submission",
-                submission_id=submission.id,
-                subreddit=str(submission.subreddit),
+                message="Exception while getting submission",
+                submission_id=submission_id,
                 exception=str(e),
             )
             raise e
@@ -71,7 +70,7 @@ class RedditFacade:
     async def reload_submissions(self, submissions: SubmissionList) -> SubmissionList:
         return SubmissionList(
             submissions=[
-                await self.reload_submission(submission=submission)
+                await self.get_submission_by_id(submission_id=submission.id)
                 for submission in submissions.get_submissions()
             ]
         )
