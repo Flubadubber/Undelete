@@ -42,7 +42,7 @@ class RemovedPostSweeper:
                     timeout=interval - 1,
                 )
             )
-            await asyncio.sleep(interval)
+            await asyncio.sleep(delay=interval)
 
     async def sweep(
         self,
