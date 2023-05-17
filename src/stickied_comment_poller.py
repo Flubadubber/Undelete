@@ -78,7 +78,9 @@ class StickiedCommentPoller:
     async def _reply_with_stickied_comment(
         stickied_comment: Comment, submission: Submission
     ) -> None:
-        quoted_body: Final[str] = ">" + stickied_comment.body.replace("\n", "\n>")
+        quoted_body: Final[str] = ">" + stickied_comment.body.replace(
+            "\n", "\n>"
+        ).replace("---", "").replace("___", "").replace("***", "")
         comment_body: Final[str] = (
             "The [following stickied comment](https://www.reddit.com"
             + f"{stickied_comment.permalink}) was added to the removed submission:\n\n"
