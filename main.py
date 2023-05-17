@@ -9,11 +9,14 @@ from asyncpraw import Reddit
 
 from src.config_dict import ConfigDict
 from src.logging_setup import LoggingSetup
+from src.stickied_comment_poller import StickiedCommentPoller
 from src.reddit_facade import RedditFacade
-from src.structured_log import StructuredLog
 from src.removed_post_sweeper import RemovedPostSweeper
+from src.structured_log import StructuredLog
 
 SWEEP_SUBREDDIT: Final[str] = "all"
+MODERATOR_COMMENT_POLLER_INTERVAL: Final[int] = 300
+MODERATOR_COMMENT_STREAM_RETRY_INTERVAL: Final[int] = 30
 
 
 async def main():
@@ -34,6 +37,9 @@ async def main():
     removed_post_sweeper: Final[RemovedPostSweeper] = RemovedPostSweeper(
         reddit_facade=reddit_facade,
     )
+    moderator_comment_poller: Final[StickiedCommentPoller] = StickiedCommentPoller(
+        reddit_facade=reddit_facade
+    )
     try:
         await asyncio.gather(
             *[
@@ -46,7 +52,12 @@ async def main():
                 )
                 for crosspost_subreddit_config in config["crosspost_subreddits"]
             ],
-            return_exceptions=True,
+            moderator_comment_poller.start(
+                username=config["client"]["username"],
+                poller_interval=MODERATOR_COMMENT_POLLER_INTERVAL,
+                stream_retry_interval=MODERATOR_COMMENT_STREAM_RETRY_INTERVAL,
+            ),
+            return_exceptions=False,
         )
     except asyncio.exceptions.CancelledError:
         StructuredLog.critical(message="Main thread interrupted, performing cleanup")
